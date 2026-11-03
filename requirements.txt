@@ -1,3 +1,3 @@
 # Core offline triage, reporting, and Java parse checks.
-requests==2.32.3
+requests==2.33.0
 javalang==0.13.0
