@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+demo_out/
+out/
+*.env
+.env*
+vv_spend.json
+vv_spend.json.lock
+
+# Locally supplied Semgrep registry metadata is license-restricted and must not be committed.
+training/synth/semgrep_rules.json

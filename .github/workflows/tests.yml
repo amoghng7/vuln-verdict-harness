@@ -1,0 +1,39 @@
+name: offline-tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -r requirements-dev.txt
+      - run: python -m pytest -q
+      - name: Run tiny offline CLI example
+        env:
+          MODEL_API_KEY: ""
+        run: python -m vuln_verdict triage examples/tiny/semgrep.sarif --repo examples/tiny --probs-file examples/tiny/probs_r2_s7.jsonl --out out/ci-tiny
+      - name: Verify alert retention and reports
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          out = Path("out/ci-tiny")
+          sarif = json.loads((out / "annotated.sarif").read_text(encoding="utf-8"))
+          results = [result for run in sarif["runs"] for result in run["results"]]
+          assert len(results) == 6
+          assert all(r["properties"]["vulnVerdict"]["neverSuppressed"] is True for r in results)
+          assert all("suppressions" not in r for r in results)
+          assert all((out / name).is_file() for name in ("report.md", "report.html", "state.jsonl"))
+          PY

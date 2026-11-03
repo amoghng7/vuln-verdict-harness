@@ -1,0 +1,2 @@
+# Optional pinned Semgrep scanner for fresh scans and remediation checks.
+semgrep==1.183.0

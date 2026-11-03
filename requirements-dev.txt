@@ -1,0 +1,3 @@
+# Core dependencies plus the offline test runner.
+-r requirements.txt
+pytest==9.2.0

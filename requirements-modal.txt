@@ -1,0 +1,3 @@
+# Core dependencies plus the optional Modal classifier client.
+-r requirements.txt
+modal==1.6.3

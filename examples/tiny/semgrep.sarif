@@ -1,0 +1,90 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/schemas/sarif-schema-2.1.0.json",
+  "runs": [
+    {
+      "invocations": [{"executionSuccessful": true, "toolExecutionNotifications": []}],
+      "tool": {
+        "driver": {
+          "name": "Semgrep OSS",
+          "semanticVersion": "1.183.0",
+          "rules": [
+            {
+              "id": "java.lang.security.audit.formatted-sql-string.formatted-sql-string",
+              "name": "java.lang.security.audit.formatted-sql-string.formatted-sql-string",
+              "defaultConfiguration": {"level": "error"},
+              "shortDescription": {"text": "Demo SQL string-formatting finding"},
+              "properties": {"precision": "medium", "tags": ["CWE-89", "MEDIUM CONFIDENCE", "security"]}
+            },
+            {
+              "id": "java.lang.security.audit.crypto.use-of-md5.use-of-md5",
+              "name": "java.lang.security.audit.crypto.use-of-md5.use-of-md5",
+              "defaultConfiguration": {"level": "warning"},
+              "shortDescription": {"text": "Demo MD5 finding"},
+              "properties": {"precision": "very-high", "tags": ["CWE-328", "HIGH CONFIDENCE", "security"]}
+            },
+            {
+              "id": "java.lang.security.audit.crypto.ecb-cipher.ecb-cipher",
+              "name": "java.lang.security.audit.crypto.ecb-cipher.ecb-cipher",
+              "defaultConfiguration": {"level": "warning"},
+              "shortDescription": {"text": "Demo ECB-mode finding"},
+              "properties": {"precision": "very-high", "tags": ["CWE-327", "HIGH CONFIDENCE", "security"]}
+            },
+            {
+              "id": "java.lang.security.audit.crypto.des-is-deprecated.des-is-deprecated",
+              "name": "java.lang.security.audit.crypto.des-is-deprecated.des-is-deprecated",
+              "defaultConfiguration": {"level": "warning"},
+              "shortDescription": {"text": "Demo DES finding"},
+              "properties": {"precision": "very-high", "tags": ["CWE-326", "HIGH CONFIDENCE", "security"]}
+            },
+            {
+              "id": "java.lang.security.audit.xxe.documentbuilderfactory-disallow-doctype-decl-missing.documentbuilderfactory-disallow-doctype-decl-missing",
+              "name": "java.lang.security.audit.xxe.documentbuilderfactory-disallow-doctype-decl-missing.documentbuilderfactory-disallow-doctype-decl-missing",
+              "defaultConfiguration": {"level": "error"},
+              "shortDescription": {"text": "Demo XML parser hardening finding"},
+              "properties": {"precision": "very-high", "tags": ["CWE-611", "HIGH CONFIDENCE", "security"]}
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "java.lang.security.audit.formatted-sql-string.formatted-sql-string",
+          "message": {"text": "Demo finding: this SQL statement uses string formatting; use bound parameters instead."},
+          "properties": {},
+          "locations": [{"physicalLocation": {"artifactLocation": {"uri": "src/main/java/com/example/demo/AccountService.java", "uriBaseId": "%SRCROOT%"}, "region": {"startLine": 25, "endLine": 25, "startColumn": 16, "endColumn": 36, "snippet": {"text": "        return st.executeQuery(sql);"}}}}]
+        },
+        {
+          "ruleId": "java.lang.security.audit.crypto.use-of-md5.use-of-md5",
+          "message": {"text": "Demo finding: MD5 is not suitable for security-sensitive hashing."},
+          "properties": {},
+          "locations": [{"physicalLocation": {"artifactLocation": {"uri": "src/main/java/com/example/demo/AccountService.java", "uriBaseId": "%SRCROOT%"}, "region": {"startLine": 39, "endLine": 39, "startColumn": 54, "endColumn": 59, "snippet": {"text": "        MessageDigest md = MessageDigest.getInstance(\"MD5\");"}}}}]
+        },
+        {
+          "ruleId": "java.lang.security.audit.crypto.ecb-cipher.ecb-cipher",
+          "message": {"text": "Demo finding: ECB mode does not provide semantic security or integrity."},
+          "properties": {},
+          "locations": [{"physicalLocation": {"artifactLocation": {"uri": "src/main/java/com/example/demo/AccountService.java", "uriBaseId": "%SRCROOT%"}, "region": {"startLine": 45, "endLine": 45, "startColumn": 63, "endColumn": 63, "snippet": {"text": "        Cipher c = Cipher.getInstance(\"DES/ECB/PKCS5Padding\");"}}}}]
+        },
+        {
+          "ruleId": "java.lang.security.audit.crypto.des-is-deprecated.des-is-deprecated",
+          "message": {"text": "Demo finding: DES is obsolete; migrate to a modern authenticated-encryption design."},
+          "properties": {},
+          "locations": [{"physicalLocation": {"artifactLocation": {"uri": "src/main/java/com/example/demo/AccountService.java", "uriBaseId": "%SRCROOT%"}, "region": {"startLine": 45, "endLine": 45, "startColumn": 39, "endColumn": 39, "snippet": {"text": "        Cipher c = Cipher.getInstance(\"DES/ECB/PKCS5Padding\");"}}}}]
+        },
+        {
+          "ruleId": "java.lang.security.audit.xxe.documentbuilderfactory-disallow-doctype-decl-missing.documentbuilderfactory-disallow-doctype-decl-missing",
+          "message": {"text": "Demo finding: disable DOCTYPE declarations or external entities before parsing untrusted XML."},
+          "properties": {},
+          "locations": [{"physicalLocation": {"artifactLocation": {"uri": "src/main/java/com/example/demo/AccountService.java", "uriBaseId": "%SRCROOT%"}, "region": {"startLine": 53, "endLine": 55, "startColumn": 9, "endColumn": 53, "snippet": {"text": "        DocumentBuilder db = dbf.newDocumentBuilder();"}}}}]
+        },
+        {
+          "ruleId": "java.lang.security.audit.xxe.documentbuilderfactory-disallow-doctype-decl-missing.documentbuilderfactory-disallow-doctype-decl-missing",
+          "message": {"text": "Demo finding: disable DOCTYPE declarations or external entities before parsing untrusted XML."},
+          "properties": {},
+          "locations": [{"physicalLocation": {"artifactLocation": {"uri": "src/main/java/com/example/demo/AccountService.java", "uriBaseId": "%SRCROOT%"}, "region": {"startLine": 60, "endLine": 60, "startColumn": 9, "endColumn": 53, "snippet": {"text": "        DocumentBuilder db = dbf.newDocumentBuilder();"}}}}]
+        }
+      ]
+    }
+  ]
+}
