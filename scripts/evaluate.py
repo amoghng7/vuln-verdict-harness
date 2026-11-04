@@ -206,6 +206,7 @@ def main():
         st = pipeline.assign_lanes(alerts, probs)
         if not a.no_audit:
             pipeline.run_audits(alerts, st, od, a.max_audits)
+        pipeline.merge_cached_state(alerts, st, od)
         res["dev"] = metrics(alerts, st, labels)
         with open(os.path.join(od, "state.jsonl"), "w", encoding="utf-8") as f:
             for x in alerts:
@@ -220,6 +221,7 @@ def main():
             tps = {x.id for x in alerts if labels.get(x.id) == "true_positive" and remediate.category(x)}
             pipeline.run_remediation(alerts, st, a.real_repo, od, lanes=("confident_tp", "needs_review", "likely_fp"),
                                      max_fixes=a.max_fixes, require_audit_agree=False, semgrep_bin=a.semgrep_bin, only=tps)
+        pipeline.merge_cached_state(alerts, st, od)
         res["real"] = metrics(alerts, st, labels)
         write_all(od, sarif, alerts, st, "real-world set (evaluation)", {"note": "evaluation run; remediation on labelled TPs"})
     if s0 is not None:

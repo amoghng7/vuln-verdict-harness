@@ -1,7 +1,8 @@
 """Triage pipeline: classifier lanes -> Muse audit -> verifiable remediation -> annotated outputs.
 
 Audits and fixes are cached with an alert-content fingerprint, preventing alert IDs such as r0.0 from
-reusing results belonging to a different SARIF file in the same output directory.
+reusing results belonging to a different SARIF file in the same output directory. Both caches are
+merged back into alert state before every report write, including a later invocation of only one stage.
 """
 import concurrent.futures as cf, hashlib, json, os, sys
 
@@ -38,6 +39,21 @@ def _cache(path, alerts):
 def _append(path, a, data):
     with open(path, "a", encoding="utf-8") as f:
         f.write(json.dumps({"alert_id": a.id, "alert_fingerprint": _fingerprint(a), "data": data}) + "\n")
+
+
+def merge_cached_state(alerts, state, outdir):
+    """Load fingerprint-valid audit and fix caches into `state` before a report write.
+
+    Entries already set in this process are kept. A later invocation that runs only one
+    stage still writes the other stage's cached result. Mismatched fingerprints and other
+    alert IDs are ignored, and cache files are not deleted or rewritten here.
+    """
+    for key, name in (("audit", "audits.jsonl"), ("fix", "fixes.jsonl")):
+        cached = _cache(os.path.join(outdir, name), alerts)
+        for aid, data in cached.items():
+            if aid in state:
+                state[aid].setdefault(key, data)
+    return state
 
 
 def assign_lanes(alerts, probs, lo=LO, hi=HI):
@@ -123,5 +139,6 @@ def run_remediation(alerts, state, repo, outdir, lanes=("confident_tp",), max_fi
 
 
 def finish(outdir, sarif, alerts, state, title, meta=None, stage=""):
+    merge_cached_state(alerts, state, outdir)
     write_all(outdir, sarif, alerts, state, title, meta)
     log(f"[{stage}] wrote {outdir}/annotated.sarif, report.md, report.html")
