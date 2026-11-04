@@ -37,7 +37,8 @@ hardening. All five original stages were reported done, with no Modal apps left 
 ## Hardening — 3 Nov 2026
 
 - Replaced bundled registry-derived demo text with self-written metadata and documented the omitted restricted rule
-  catalog. Historical Git blobs still require separate cleanup before public distribution.
+  catalog. Historical blobs were subsequently removed from the published repository by verified clean-snapshot
+  recreation; see below.
 - Hardened canonical SARIF/repository/sandbox containment, classifier input validation, lane/cap validation, original
   source-integrity checks, Semgrep exit handling, cache fingerprints, persistent spend reservations, and multi-run alert
   retention.
@@ -47,3 +48,17 @@ hardening. All five original stages were reported done, with no Modal apps left 
   dependency sets, offline CI, and adversarial regression tests.
 - **56 offline tests passed.** No Meta API calls, live Semgrep runs, private evaluation, or reproduction of the
   historical online evaluation were performed for this hardening. Patched Java projects were not compiled or tested.
+
+## Repository history cleanup — completed 3 Nov 2026
+
+- Recreated the repository under the same name with a new internal repository ID and pushed only the verified clean
+  snapshot `38030a86a5234ac941f7919f0f9633a2e18b4076`.
+- At cleanup, that snapshot had the tested tree `3e43efc2d61f4f2225840752a391c02235b8dbad` and exactly one parentless
+  commit. Later reviewed dependency and documentation commits do not reintroduce the old history.
+- All nine checked historical commit IDs returned GitHub's explicit HTTP 422 no-commit-found response through the
+  replacement repository. Both restricted historical blobs returned HTTP 404.
+- A fresh mirror confirmed that neither affected blob was reachable from any remote ref. The offline-tests workflow run
+  `41690341437` completed successfully on the clean snapshot.
+- The repository remained private. Private Git and metadata backups were retained outside the repository; no generated
+  outputs, credentials, private datasets, weights, caches, spend logs, or local configuration were added to the clean
+  snapshot.
