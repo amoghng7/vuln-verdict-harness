@@ -336,7 +336,7 @@ def generic_snippet(raw, cls, line):
     out = [(i + 1, renamed[i].rstrip()) for i, l in enumerate(lines)
            if i >= c0 and l.strip() and "serialVersionUID" not in l]
     if not any(n == line for n, _ in out):  # alert above the type declaration (e.g. annotations): start at file top
-        out = [(i + 1, l.rstrip()) for i, l in enumerate(lines) if l.strip()]
+        out = [(i + 1, renamed[i].rstrip()) for i, l in enumerate(lines) if l.strip()]
     windowed = False
     if len(out) > MAX_SNIPPET_LINES:
         windowed = True

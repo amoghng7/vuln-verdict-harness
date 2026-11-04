@@ -148,6 +148,44 @@ def test_extract_and_generic_keep_md5_literal_and_line_numbers():
     assert not g_trunc and not g_window
 
 
+def test_generic_snippet_renames_when_alert_is_above_class():
+    src = """\
+package com.yt.md5;
+import com.yt.md5.MD5;
+@Note("MD5")
+public class MD5 {
+    private static final long serialVersionUID = 1L;
+
+    MD5 next;
+    public MD5(String seed) {}
+    public String GetMD5Code(MD5 other) {
+        MessageDigest.getInstance("MD5");
+        return new MD5(other).GetMD5Code(other);
+    }
+}
+"""
+    raw = src.splitlines()
+    alert = next(i for i, line in enumerate(raw, 1) if line.startswith("import "))
+    out, trunc, windowed = generic_snippet(src, "MD5", alert)
+    text = _text(out)
+    assert not trunc and not windowed
+    assert any(n == alert and t == "import com.yt.md5.RequestHandler;" for n, t in out)
+    assert "public class RequestHandler" in text
+    assert "RequestHandler next;" in text
+    assert "public RequestHandler(String seed)" in text
+    assert "GetMD5Code(RequestHandler other)" in text
+    assert "new RequestHandler(other).GetMD5Code(other)" in text
+    assert "GetMD5Code" in text and "GetRequestHandlerCode" not in text
+    assert 'MessageDigest.getInstance("MD5")' in text
+    assert '@Note("MD5")' in text
+    assert "com.yt.RequestHandler" not in text
+    blank_nums = {i for i, line in enumerate(raw, 1) if not line.strip()}
+    assert blank_nums and not any(n in blank_nums for n, _ in out)
+    assert any(n == next(i for i, line in enumerate(raw, 1) if "serialVersionUID" in line) for n, _ in out)
+    for n, t in out:
+        assert n is not None and raw[n - 1].strip()
+
+
 def test_window_keeps_original_line_numbers():
     lines = ["public class MD5 {"]
     lines += [f"    int marker{n} = {n};" for n in range(2, 40)]
