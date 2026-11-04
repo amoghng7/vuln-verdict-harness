@@ -38,6 +38,10 @@ Complete and verify every item before changing repository visibility or submitti
 - [ ] Describe successful remediation only as **“Semgrep-cleared; not compiled or tested.”** Never imply compilation,
       project tests, semantic correctness, or original-repository modification.
 
+`PUBLIC_EVALUATION.md` records two public live runs. That document does not close judge access, private reproduction,
+or the adapter-identity comparison above. Fresh public Semgrep clearance does not replace the historical private 83/87
+figure. Run B's MD5 observations are pre-fix evidence, not a measured accuracy gain.
+
 ## Secret and output hygiene
 
 - [ ] Never commit or expose credentials, API keys, signed URLs, spend logs, caches, generated SARIF/reports/state,

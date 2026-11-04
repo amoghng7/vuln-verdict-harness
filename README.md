@@ -85,8 +85,10 @@ Outputs in `--out`:
 - `remediation/*/patches/*.patch` when a patch is generated.
 
 Cache reuse requires both the alert ID and a fingerprint of its file, lines, rule ID, message, and formatted code.
-Legacy rows and content-fingerprint mismatches are ignored. Model/prompt/experiment and Semgrep configuration changes
-are not complete cache keys; use a fresh output directory when changing those settings.
+Legacy rows and content-fingerprint mismatches are ignored. A later invocation reloads every fingerprint-valid
+audit and fix row before it writes the four report artifacts, including when that invocation runs only one stage.
+Changed alert content and a different alert ID are not reused. Model/prompt/experiment and Semgrep configuration
+changes are not complete cache keys; use a fresh output directory when changing those settings.
 
 Main flags:
 - `--max-audits` (default 100) and `--max-fixes` (default 30), both non-negative.
@@ -107,11 +109,14 @@ Keep spend files, caches, generated reports/SARIF, patches, and credentials out 
 ### Classifier input
 
 `vuln_verdict/sarif.py` and `vuln_verdict/snippet.py` rebuild the training prompt layout: comments are stripped, the
-class is renamed `RequestHandler`, code is line-numbered, snippets are windowed/elided, and the header carries Semgrep
-rule, severity/confidence, CWE, and message. `--probs-file` accepts JSONL rows keyed by `alert_id`, by
-`file`/`line`/`rule_id`, or by integer `idx`.
+alerted class is renamed `RequestHandler` only as a whole identifier (constructors and other type uses included),
+code is line-numbered, snippets are windowed/elided, and the header carries Semgrep rule, severity/confidence, CWE,
+and message. That rename does not rewrite string literals, character literals, text blocks, or comments. Ordinary
+single-line strings still pass through the documented `neutral_literal()` scrub. `--probs-file` accepts JSONL rows
+keyed by `alert_id`, by `file`/`line`/`rule_id`, or by integer `idx`.
 
-The historical prompt-parity and Modal comparisons are recorded in `EVAL.md`; they are not fresh reproduction claims.
+The historical prompt-parity and Modal comparisons are recorded in `EVAL.md`. Two later public live runs are in
+`PUBLIC_EVALUATION.md`. They are not fresh reproductions of the historical metrics.
 
 ## Repository containment and remediation
 
@@ -166,4 +171,5 @@ scripts/        demo.sh, evaluate.py (private-data evaluation entry point)
 tests/          offline pytest suite (no GPU, API key, Modal, network, or Semgrep)
 ```
 
-See `EVAL.md` for historical metrics and `SUBMISSION.md` for the author submission checklist.
+See `EVAL.md` for historical metrics, `PUBLIC_EVALUATION.md` for the separate public live runs, and `SUBMISSION.md`
+for the author submission checklist.

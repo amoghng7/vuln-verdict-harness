@@ -62,3 +62,15 @@ hardening. All five original stages were reported done, with no Modal apps left 
 - The repository remained private. Private Git and metadata backups were retained outside the repository; no generated
   outputs, credentials, private datasets, weights, caches, spend logs, or local configuration were added to the clean
   snapshot.
+
+## Correctness fixes — 4 Nov 2026
+
+- Java class anonymization is token-exact. It renames the alerted type and its constructors, and it no longer rewrites
+  string literals, character literals, text blocks, comments, or longer identifiers. `neutral_literal()` is unchanged.
+- A later CLI invocation reloads fingerprint-valid audit and fix caches before writing `annotated.sarif`, `report.md`,
+  `report.html`, and `state.jsonl`. Changed alert content and a different alert ID are not reused.
+- **69 offline tests passed.** The tiny demo retained six unsuppressed alerts and wrote all four report artifacts.
+  No Meta API calls, live Semgrep runs, or bulk paid evaluation were performed for these fixes.
+- Two public live runs are documented in `PUBLIC_EVALUATION.md`. Run B's MD5 classifier and audit notes are pre-fix
+  evidence. The anonymization fix is not an accuracy result. Isolated Java compilation was **NOT RUN**: no container
+  runtime or Java build tool was available, and the projects were not executed on the host.

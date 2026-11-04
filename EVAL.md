@@ -4,6 +4,9 @@
 hardening changes.** The labelled datasets, predictions, and real-world repository are private. Historical inference
 used Muse Spark `muse-spark-1.3` with low reasoning effort and Semgrep OSS 1.183.0 with `p/java`.
 
+Two later public live runs are recorded separately in `PUBLIC_EVALUATION.md`. Their metrics are not pooled with each
+other or with the tables below, and they do not replace the historical private 83/87 Semgrep-clearance figure.
+
 The dev set influenced model and band selection. The real set was excluded from direct selection scores but influenced
 targeted training-data design after round-1 failures, so it is **not an independent test set**.
 
