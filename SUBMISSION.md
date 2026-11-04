@@ -19,8 +19,8 @@ Complete and verify every item before changing repository visibility or submitti
 ## Judge, repository, model, and adapter access
 
 - [ ] Confirm judges can access the intended code repository and offline tiny example without private credentials.
-- [ ] Explicitly arrange and test any intended judge access to the private repository and private `r2_s7` adapter; do
-      not assume public access.
+- [ ] Make the Hugging Face adapter repo public and confirm `scripts/run_real_model.sh fetch` works without a token.
+      The script was tested on Modal with a token while the adapter was still private.
 - [ ] Record adapter checksums and verify the adapter at `/vol/outputs/r2_s7/adapter` matches the reviewed artifact.
 - [ ] Pin `VV_BASE_MODEL_REVISION` to an immutable base-model commit and record the adapter identifier, Semgrep 1.183.0,
       dependency pins, and relevant volume names. Do not present a floating model or registry version as immutable.

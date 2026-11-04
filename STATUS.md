@@ -1,7 +1,7 @@
 # vuln-verdict-harness status
 
-The GitHub repository `amoghng7/vuln-verdict-harness` and Hugging Face adapter repository
-`amoghng7/vuln-verdict-muse-glimmer-30b-lora` remain **private**.
+The GitHub repository `amoghng7/vuln-verdict-harness` is public. The `r2_s7` adapter is published on Hugging Face at
+`amoghng7/vuln-verdict-muse-glimmer-30b-lora` under Apache-2.0; see "Run the real model" in `README.md`.
 
 ## Historical status — 2 Nov 2026
 

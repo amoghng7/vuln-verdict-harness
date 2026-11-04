@@ -39,14 +39,41 @@ unsuppressed. The tests mock Semgrep and Meta API behavior and run entirely offl
 `requirements-semgrep.txt` pins Semgrep OSS **1.183.0** for users who want fresh scans or remediation re-checks;
 installing it is not part of the offline quickstart.
 
-## Author-only online reproduction
+## Run the real model
 
-The published evaluation is historical, not freshly reproduced from this checkout. The repository and
-`amoghng7/vuln-verdict-muse-glimmer-30b-lora` adapter remain private. Training/evaluation JSONL, predictions, and the
-real-world evaluation repository are not distributed, so `scripts/evaluate.py` cannot recreate the published metrics
-without those author-held inputs. See `DATA.md` and `EVAL.md`.
+The fine-tuned adapter is published on Hugging Face at
+[amoghng7/vuln-verdict-muse-glimmer-30b-lora](https://huggingface.co/amoghng7/vuln-verdict-muse-glimmer-30b-lora)
+under Apache-2.0 (the same license as the base model, `meta-models/Muse-Glimmer-30B`, which is not gated). You can
+run it on your own free Modal account. No Hugging Face token is needed.
 
-For an authorized Modal classifier run:
+1. Create a free account at [modal.com](https://modal.com), then:
+   ```bash
+   python -m pip install -r requirements-modal.txt
+   modal setup
+   ```
+2. Fetch the weights into your own Modal volumes (CPU only, roughly 10 to 15 minutes):
+   ```bash
+   bash scripts/run_real_model.sh fetch
+   ```
+3. Classify the tiny example on a GPU and compare with the bundled probabilities:
+   ```bash
+   bash scripts/run_real_model.sh classify
+   ```
+
+Step 3 runs on one A100-80GB and costs a few dollars of Modal credit. It prints `p_true` for each of the six alerts
+next to `examples/tiny/probs_r2_s7.jsonl` and writes the report to `out/real_tiny`. Small differences from the bundled
+values are expected. Apps are ephemeral and stop when each command returns; check with `modal app list`.
+
+The Muse Spark audit and remediation steps are optional and need your own Meta Model API key in `MODEL_API_KEY`
+(see below).
+
+## Historical evaluation data
+
+The published evaluation is historical, not freshly reproduced from this checkout. Training/evaluation JSONL,
+predictions, and the real-world evaluation repository are not distributed, so `scripts/evaluate.py` cannot recreate
+the published metrics without those author-held inputs. See `DATA.md` and `EVAL.md`.
+
+To classify your own SARIF with the real model on Modal (after `fetch`):
 
 ```bash
 python -m pip install -r requirements-modal.txt
@@ -63,6 +90,7 @@ claim. Modal configuration:
 | `VV_GPU` | `A100-80GB` |
 | `VV_HF_VOLUME` | `muse-glimmer-hf-cache` |
 | `VV_ADAPTER_VOLUME` | `vuln-verdict-outputs` |
+| `VV_ADAPTER_REPO` | `amoghng7/vuln-verdict-muse-glimmer-30b-lora` (used by `fetch_weights.py`) |
 | `--adapter` | `r2_s7`; adapter path is `/vol/outputs/r2_s7/adapter` on the selected volume |
 
 `MODEL_API_KEY` is separately required for Meta Muse Spark audit/remediation calls. A full online command is:
@@ -156,7 +184,7 @@ Some fixes change behavior or require data migration. Muse records these as cave
 
 Project code and the fine-tuning/evaluation work were developed during the Meta hackathon. They build on third-party
 inputs including OWASP Benchmark code and labels, Semgrep engine/rules, six public development repositories, the Muse
-base model, and Muse-generated synthetic data. Those inputs have separate licenses and provenance; see `DATA.md`.
+base model, and synthetic data, part of which was generated with Muse Spark. Those inputs have separate licenses and provenance; see `DATA.md`.
 
 The dev set influenced model and band selection. The real set was excluded from direct selection scores but influenced
 targeted training-data design, so it is not an independent test set.
@@ -165,9 +193,9 @@ targeted training-data design, so it is not an independent test set.
 
 ```
 vuln_verdict/   cli.py sarif.py snippet.py lanes.py classifier.py muse.py audit.py remediate.py pipeline.py report.py
-modal_app/      classifier_modal.py (ephemeral Modal app; needs base + adapter volumes)
+modal_app/      classifier_modal.py (ephemeral GPU app), fetch_weights.py (downloads base + adapter)
 examples/tiny/  self-written Java, self-written demo SARIF metadata, bundled probabilities
-scripts/        demo.sh, evaluate.py (private-data evaluation entry point)
+scripts/        demo.sh, run_real_model.sh, evaluate.py (private-data evaluation entry point)
 tests/          offline pytest suite (no GPU, API key, Modal, network, or Semgrep)
 ```
 

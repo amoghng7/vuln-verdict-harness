@@ -13,8 +13,9 @@ no private evaluation repository, private dataset, model weights, generated eval
   are the sole bundled prediction fixture, not an evaluation dataset.
 - **Restricted registry metadata**: `training/synth/semgrep_rules.json` is deliberately absent. The targeted generator
   needs locally supplied metadata that the user is authorized to use; see `training/synth/README.md`.
-- **LoRA adapters / model weights**: fine-tuned adapters (`*.safetensors`, about 419 MB each) are not included. The
-  `r2_s7` adapter remains private. The base model (`meta-models/Muse-Glimmer-30B`) is obtained separately under its
+- **LoRA adapters / model weights**: fine-tuned adapters (`*.safetensors`, about 419 MB each) are not included in
+  this repository. The `r2_s7` adapter is published separately on Hugging Face at
+  `amoghng7/vuln-verdict-muse-glimmer-30b-lora` (Apache-2.0). The base model (`meta-models/Muse-Glimmer-30B`) is obtained separately under its
   own license.
 - **Real-world evaluation repository**: its code, file names, labels, predictions, and evaluation set are private and
   are not published here.
