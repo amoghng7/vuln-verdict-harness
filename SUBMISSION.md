@@ -4,10 +4,16 @@ Complete and verify every item before changing repository visibility or submitti
 
 ## Git history and distribution
 
-- [ ] Purge restricted historical Git blobs, including deleted registry-derived content, or replace the repository with
+- [x] Purge restricted historical Git blobs, including deleted registry-derived content, or replace the repository with
       a verified clean snapshot. A deletion in the current tree is not history cleanup.
-- [ ] Inspect the complete final diff and all distributed files; confirm there are no unrelated fixture rewrites or
+- [x] Inspect the complete final diff and all distributed files; confirm there are no unrelated fixture rewrites or
       generated artifacts.
+
+  Completed by verified clean-snapshot recreation. The clean root snapshot was
+  `38030a86a5234ac941f7919f0f9633a2e18b4076`; the tracked-tree audit passed, all nine checked historical commits
+  returned HTTP 422 through the replacement repository, both affected blobs returned HTTP 404, and offline-tests run
+  `41690341437` succeeded.
+
 - [ ] Recheck Semgrep Rules License v1.0, OWASP GPL-2.0 obligations, and all third-party provenance notices.
 
 ## Judge, repository, model, and adapter access
