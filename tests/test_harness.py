@@ -92,6 +92,7 @@ def test_line_map_and_parse_checks():
     m = remediate.line_map(old, new)
     assert m[1] == 1 and m[4] == 3 and m[5] == 4 and 2 not in m
     assert remediate.braces_balanced("class X { void f() { String s = \"{\"; } }")
+    assert remediate.braces_balanced("class X { String s = \"\"\"\n{\n\"\"\"; }")
     assert not remediate.braces_balanced("class X { void f() { }")
 
 

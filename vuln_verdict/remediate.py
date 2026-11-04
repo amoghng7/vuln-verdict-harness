@@ -9,7 +9,7 @@ import difflib, hashlib, json, os, re, shutil, subprocess
 from pathlib import Path
 
 from . import muse
-from .snippet import strip_comments
+from .snippet import java_tokens
 
 CATEGORIES = {
     "sqli": "SQL injection: replace string-built SQL with a parameterised query (PreparedStatement with ? placeholders "
@@ -147,14 +147,23 @@ def line_map(old, new):
 
 
 def braces_balanced(text):
-    """Check delimiter ordering as well as counts after removing comments and literals."""
-    s = strip_comments(text)
-    s = re.sub(r'"(?:[^"\\\n]|\\.)*"', '""', s); s = re.sub(r"'(?:[^'\\\n]|\\.)*'", "''", s)
+    """Check delimiter ordering as well as counts outside comments and literals.
+
+    Text blocks, strings, and character literals are skipped. An unclosed literal is
+    not treated as balanced, because its tail was not classified confidently.
+    """
     pairs, stack = {")": "(", "]": "[", "}": "{"}, []
-    for c in s:
-        if c in "([{": stack.append(c)
-        elif c in pairs:
-            if not stack or stack.pop() != pairs[c]: return False
+    for kind, a, b in java_tokens(text):
+        if kind in ("string", "char", "text", "comment"):
+            continue
+        if kind == "opaque":
+            return False
+        for c in text[a:b]:
+            if c in "([{":
+                stack.append(c)
+            elif c in pairs:
+                if not stack or stack.pop() != pairs[c]:
+                    return False
     return not stack
 
 
